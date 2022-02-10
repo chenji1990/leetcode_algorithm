@@ -1,48 +1,35 @@
 package main
 
 import (
-	"container/list"
+	"fmt"
+	"strconv"
 )
 
-type MinStack struct {
-	stack    *list.List
-	minStack *list.List
-}
-
-func Constructor() MinStack {
-	return MinStack{
-		stack:    list.New(),
-		minStack: list.New(),
+func movingCount(m int, n int, k int) int {
+	matrix := make([][]bool, m)
+	for i := range matrix {
+		matrix[i] = make([]bool, n)
 	}
-}
-
-func (this *MinStack) Push(x int) {
-	if this.stack.Len() == 0 {
-		this.minStack.PushBack(x)
-	} else {
-		this.minStack.PushBack(min(x, this.minStack.Back().Value.(int)))
+	var dfs func(i, j int) int
+	dfs = func(i, j int) int {
+		if i < 0 || i >= m || j < 0 || j >= n || (addBit(i)+addBit(j) > k) || matrix[i][j] {
+			return 0
+		}
+		matrix[i][j] = true
+		return dfs(i, j+1) + dfs(i, j-1) + dfs(i+1, j) + dfs(i-1, j) + 1
 	}
-	this.stack.PushBack(x)
+	return dfs(0, 0)
 }
 
-func (this *MinStack) Pop() {
-	if this.stack.Len() > 0 {
-		this.stack.Remove(this.stack.Back())
-		this.minStack.Remove(this.minStack.Back())
+func addBit(v int) int {
+	src := strconv.Itoa(v)
+	var sum int
+	for i := 0; i < len(src); i++ {
+		sum += (int(src[i]) - int('0'))
 	}
+	return sum
 }
 
-func (this *MinStack) Top() int {
-	return this.stack.Back().Value.(int)
-}
-
-func (this *MinStack) Min() int {
-	return this.minStack.Back().Value.(int)
-}
-
-func min(x, y int) int {
-	if x > y {
-		return y
-	}
-	return x
+func main() {
+	fmt.Println("res = ", movingCount(1, 2, 1))
 }

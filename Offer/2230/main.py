@@ -1,33 +1,21 @@
-from collections import deque
+from typing import List
 
 
-class MinStack:
-    stack: deque[int] 
-    minStack: deque[int] 
+class Solution:
+    def movingCount(self, m: int, n: int, k: int) -> int:
+        matrix: List[List[bool]] = [
+            [False for _ in range(n)] for _ in range(m)]
 
-    def __init__(self):
-        self.stack = deque([])
-        self.minStack = deque([])
+        def dfs(i: int, j: int) -> int:
+            if i < 0 or i >= m or j < 0 or j >= n or (self.addBit(i) + self.addBit(j) > k) or matrix[i][j]:
+                return 0
+            matrix[i][j] = True
+            return dfs(i, j + 1) + dfs(i, j - 1) + dfs(i + 1, j) + dfs(i - 1, j) + 1
 
+        return dfs(0, 0)
 
-    def push(self, x: int) -> None:
-        if len(self.stack) == 0:
-            self.minStack.append(x)
-        else:
-            self.minStack.append(min(x, self.minStack[-1]))
-        self.stack.append(x)
-
-    def pop(self) -> None:
-        if len(self.stack) != 0:
-            self.stack.pop()
-            self.minStack.pop()
-
-    def top(self) -> int:
-        if len(self.stack) == 0:
-            return 0
-        return self.stack[-1]
-
-    def min(self) -> int:
-        if len(self.minStack) == 0:
-            return 0
-        return self.minStack[-1]
+    def addBit(self, v) -> int:
+        sum = 0
+        for i in str(v):
+            sum += int(i)
+        return sum
