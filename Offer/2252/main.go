@@ -1,48 +1,28 @@
 package main
 
-type Node struct {
-	Val    int
-	Next   *Node
-	Random *Node
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
-func copyRandomList(head *Node) *Node {
-	if head == nil {
-		return nil
-	}
-	root := &Node{0, nil, nil}
-	tempHead := head
-	tempRoot := root
-
-	map1 := make(map[*Node]int)
-	map2 := make(map[int]*Node)
-	i := 0
-	for tempHead != nil {
-		tempRoot.Next = &Node{tempHead.Val, nil, nil}
-
-		map1[tempHead] = i
-		map2[i] = tempRoot.Next
-
-		tempRoot = tempRoot.Next
-		tempHead = tempHead.Next
-		i++
-	}
-
-	tempHead = head
-	tempRoot = root
-	var tempRandom *Node = nil
-
-	for tempHead != nil {
-		tempRandom = tempHead.Random
-		if tempRandom != nil {
-			if index, ok := map1[tempRandom]; ok {
-				tempRoot.Next.Random = map2[index]
-			}
+func pathSum(root *TreeNode, target int) (res [][]int) {
+	var path []int
+	var dfs func(*TreeNode, int)
+	dfs = func(node *TreeNode, sum int) {
+		if node == nil {
+			return
 		}
-
-		tempRoot = tempRoot.Next
-		tempHead = tempHead.Next
+		path = append(path, node.Val)
+		if node.Left == nil && node.Right == nil && sum == node.Val {
+			res = append(res, append([]int{}, path...))
+			path = path[:len(path)-1]
+			return
+		}
+		dfs(node.Left, sum-node.Val)
+		dfs(node.Right, sum-node.Val)
+		path = path[:len(path)-1]
 	}
-
-	return root.Next
+	dfs(root, target)
+	return res
 }
