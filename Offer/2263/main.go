@@ -1,22 +1,22 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
-func translateNum(num int) int {
-	if num < 10 {
-		return 1
+func minNumber(nums []int) string {
+	array := []string{}
+	for _, num := range nums {
+		array = append(array, strconv.Itoa(num))
 	}
-	src := strconv.Itoa(num)
-	length := len(src)
-
-	a, b, res := 0, 1, 1 // 初始种类
-	temp := ""
-	for i := 1; i < length; i++ {
-		a, b = b, res
-		temp = src[i-1 : i+1]
-		if temp >= "10" && temp <= "25" {
-			res += a
+	length := len(array)
+	for i := 0; i < length-1; i++ {
+		for j := i + 1; j < length; j++ {
+			if array[i]+array[j] > array[j]+array[i] {
+				array[i], array[j] = array[j], array[i]
+			}
 		}
 	}
-	return res
+	return strings.Join(array, "")
 }
